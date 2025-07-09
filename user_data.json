@@ -1,0 +1,41 @@
+{
+  "name": "Bhagya",
+  "family": [
+    "Amma",
+    "Thaththa",
+    "Sister",
+    "Brother"
+  ],
+  "reminders": [
+    "call anna tomorrow",
+    "go to moms"
+  ],
+  "notes": [],
+  "expenses": [
+    {
+      "amount": 25.0,
+      "description": "lunch",
+      "category": "misc",
+      "date": "2025-07-10"
+    }
+  ],
+  "goals": [],
+  "contacts": {
+    "Sarah": "sarah@example.com",
+    "Mike": "0112345678, mike@test.com"
+  },
+  "tasks": [
+    "prepare presentation",
+    "submit my project proposal",
+    "prepare for job interview",
+    "call dentist for appointment",
+    "buy groceries for the week",
+    "finish quarterly report"
+  ],
+  "schedule": {},
+  "preferences": {
+    "work_hours": "9:00-17:00",
+    "timezone": "UTC+5:30",
+    "notification_style": "gentle"
+  }
+}

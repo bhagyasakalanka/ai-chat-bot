@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhagya's Personal Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 900px;
+            min-height: 700px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            min-height: 200px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .suggestions-container {
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .suggestions-header {
+            background: #f8f9fa;
+            padding: 10px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            border: 2px solid #e9ecef;
+        }
+
+        .suggestions-header:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .suggestions-content {
+            max-height: 200px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .suggestions-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .suggestion {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .suggestion:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .send-button:hover {
+            background: #5a6fd8;
+        }
+
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+
+        .category-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-height: 800px) {
+            .container {
+                max-height: 95vh;
+            }
+            .suggestions-content {
+                max-height: 150px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .container {
+                max-height: 98vh;
+            }
+            .suggestions-content {
+                max-height: 100px;
+            }
+            .messages {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Bhagya's Personal Assistant</h1>
+            <p>Your intelligent companion for daily tasks, schedules, and more!</p>
+        </div>
+        
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message bot-message">
+                    Hello Bhagya! I'm your personal assistant. I can help you with:
+                    <br><br>
+                    🗣️ <strong>Natural Language:</strong> Try speaking naturally! Examples:
+                    <br>• "add task to buy groceries" or "remind me to call mom"
+                    <br>• "spent 30 on lunch" or "schedule meeting tomorrow"
+                    <br>• "show my tasks" or "find anna contact"
+                    <br>• "completed buy groceries" or "add goal to exercise daily"
+                    <br><br>
+                    📋 <strong>Tasks:</strong> Add, view, and complete your tasks
+                    <br>📅 <strong>Schedule:</strong> Manage appointments and events
+                    <br>📝 <strong>Notes & Reminders:</strong> Save important information
+                    <br>👥 <strong>Contacts:</strong> Store and find contact details
+                    <br>💰 <strong>Expenses:</strong> Track your spending
+                    <br>🎯 <strong>Goals:</strong> Set and manage your objectives
+                    <br><br>
+                    <strong>Quick Start:</strong> Try "good morning" for your daily summary!
+                    <br><br>
+                    What would you like to do today?
+                </div>
+            </div>
+            
+            <div class="suggestions-container">
+                <div class="suggestions-header" onclick="toggleSuggestions()" id="suggestionsHeader">
+                    🚀 Quick Actions (Click to show/hide)
+                </div>
+                <div class="suggestions-content collapsed" id="suggestionsContent">
+                    <div class="category-label">📊 VIEW INFORMATION</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('good morning')">🌅 Good Morning</span>
+                        <span class="suggestion" onclick="sendSuggestion('what are my tasks')">📋 My Tasks</span>
+                        <span class="suggestion" onclick="sendSuggestion('show today')">📅 Today's Schedule</span>
+                        <span class="suggestion" onclick="sendSuggestion('my reminders')">🔔 My Reminders</span>
+                        <span class="suggestion" onclick="sendSuggestion('show goals')">🎯 Show Goals</span>
+                        <span class="suggestion" onclick="sendSuggestion('show expenses')">💰 Show Expenses</span>
+                    </div>
+                    
+                    <div class="category-label">➕ ADD NEW ITEMS (Natural Language)</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('add task to ')">� Add Task</span>
+                        <span class="suggestion" onclick="sendSuggestion('remind me to ')">⏰ Add Reminder</span>
+                        <span class="suggestion" onclick="sendSuggestion('add note about ')">📄 Add Note</span>
+                        <span class="suggestion" onclick="sendSuggestion('spent ')">💸 Add Expense</span>
+                        <span class="suggestion" onclick="sendSuggestion('schedule meeting tomorrow')">📅 Schedule Item</span>
+                        <span class="suggestion" onclick="sendSuggestion('add goal to ')">� Add Goal</span>
+                    </div>
+                    
+                    <div class="category-label">👥 CONTACTS</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('add anna phone number 0771234567 and email anna@test.com')">👤 Add Contact (Example)</span>
+                        <span class="suggestion" onclick="sendSuggestion('show all contacts')">📞 All Contacts</span>
+                        <span class="suggestion" onclick="sendSuggestion('find anna contact')">🔍 Find Contact</span>
+                        <span class="suggestion" onclick="sendSuggestion('my family')">👪 My Family</span>
+                    </div>
+                    
+                    <div class="category-label">⚡ QUICK ACTIONS</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('completed ')">✅ Complete Task</span>
+                        <span class="suggestion" onclick="sendSuggestion('finished ')">✅ Finished Task</span>
+                        <span class="suggestion" onclick="sendSuggestion('show notes')">📄 Show Notes</span>
+                        <span class="suggestion" onclick="sendSuggestion('good evening')">🌙 Good Evening</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                Assistant is thinking...
+            </div>
+            
+            <div class="input-container">
+                <input type="text" class="input-field" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+                <button class="send-button" onclick="sendMessage()" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const loading = document.getElementById('loading');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.innerHTML = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            messageInput.value = '';
+            sendButton.disabled = true;
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:8000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: message })
+                });
+
+                const data = await response.json();
+                addMessage(data.response);
+            } catch (error) {
+                addMessage('Sorry, I encountered an error. Please make sure the server is running.');
+            } finally {
+                sendButton.disabled = false;
+                loading.style.display = 'none';
+                messageInput.focus();
+            }
+        }
+
+        function sendSuggestion(text) {
+            messageInput.value = text;
+            if (text.endsWith(': ') || text.endsWith(' ')) {
+                messageInput.focus();
+                messageInput.setSelectionRange(text.length, text.length);
+            } else {
+                sendMessage();
+            }
+        }
+
+        function toggleSuggestions() {
+            const content = document.getElementById('suggestionsContent');
+            const header = document.getElementById('suggestionsHeader');
+            
+            content.classList.toggle('collapsed');
+            
+            if (content.classList.contains('collapsed')) {
+                header.textContent = '🚀 Quick Actions (Click to show)';
+            } else {
+                header.textContent = '🚀 Quick Actions (Click to hide)';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Focus on input when page loads
+        window.onload = function() {
+            messageInput.focus();
+        };
+    </script>
+</body>
+</html>

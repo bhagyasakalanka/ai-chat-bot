@@ -1,0 +1,109 @@
+{
+  "name": "Bhagya",
+  "family": [
+    "Amma",
+    "Thaththa",
+    "Sister"
+  ],
+  "reminders": [
+    ": Meeting at 3.00 pm tomorrow",
+    ": test reminder", 
+    "to call the doctor tomorrow",
+    "to buy groceries",
+    "pay rent",
+    "call mom tomorrow",
+    "dentist appointment",
+    "water plants",
+    "call malindu tomorrow",
+    "go to the gym"
+  ],
+  "notes": [
+    "[2025-07-09 23:13] great restaurant downtown",
+    "[2025-07-09 23:29] meeting details",
+    "[2025-07-09 23:30] project deadline"
+  ],
+  "expenses": [
+    {
+      "amount": "15",
+      "description": "coffee",
+      "category": "misc",
+      "date": "2025-07-09"
+    },
+    {
+      "amount": "25",
+      "description": "lunch",
+      "category": "misc",
+      "date": "2025-07-09"
+    },
+    {
+      "amount": "50",
+      "description": "dinner",
+      "category": "misc",
+      "date": "2025-07-09"
+    },
+    {
+      "amount": "30",
+      "description": "parking",
+      "category": "misc",
+      "date": "2025-07-09"
+    },
+    {
+      "amount": "100",
+      "description": "groceries",
+      "category": "misc",
+      "date": "2025-07-09"
+    },
+    {
+      "amount": "75",
+      "description": "taxi",
+      "category": "misc",
+      "date": "2025-07-09"
+    }
+  ],
+  "goals": [
+    "learn Spanish",
+    "read 20 books this year", 
+    "exercise daily",
+    "learn french",
+    "cycling",
+    "learn piano",
+    "save money",
+    "cycle tomorrow",
+    "read more books"
+  ],
+  "contacts": {
+    "Malindu": "0112450943",
+    "Ravindu": "ravindu@gmail.com",
+    "John": "123-456-7890",
+    "Sarah": "0771234567, sarah2@test.com",
+    "Alex": "alex@test.com",
+    "Emma": "emma@example.com",
+    "Lisa": "lisa@work.com",
+    "Kavindus": "04393923, kavindu@gmail.com",
+    "Mike": "0771234567, mike@test.com",
+    "TestUser": "0779999999",
+    "Anna": "0771234567, anna@test.com",
+    "Madu": "022353343"
+  },
+  "tasks": [
+    "meeting at 4pm",
+    "prepare presentation for Monday",
+    "review budget",
+    "finish the quarterly report",
+    "call dentist",
+    "test new task",
+    "buy groceries",
+    "water the plants"
+  ],
+  "schedule": {
+    "2025-07-11": [
+      "team meeting"
+    ],
+    "2025-07-12": [
+      "client presentation"
+    ],
+    "2025-07-10": [
+      "meeting"
+    ]
+  }
+}

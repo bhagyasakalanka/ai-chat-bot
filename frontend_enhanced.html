@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhagya's Personal Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 900px;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .suggestions-container {
+            margin-bottom: 15px;
+        }
+
+        .suggestions-header {
+            background: #f8f9fa;
+            padding: 10px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            border: 2px solid #e9ecef;
+        }
+
+        .suggestions-header:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .suggestions-content {
+            max-height: 250px;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+
+        .suggestions-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .suggestion {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .suggestion:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .send-button:hover {
+            background: #5a6fd8;
+        }
+
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+
+        .category-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Bhagya's Personal Assistant</h1>
+            <p>Your intelligent companion for daily tasks, schedules, and more!</p>
+        </div>
+        
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message bot-message">
+                    Hello Bhagya! I'm your personal assistant. I can help you with:
+                    <br><br>
+                    📋 <strong>Tasks:</strong> "add task: Buy groceries", "add work task: Prepare report", "complete task: Call doctor", "show tasks"
+                    <br>⏰ <strong>Schedule:</strong> "schedule 2025-07-10: Team meeting", "show today", "show schedule"
+                    <br>📝 <strong>Notes & Reminders:</strong> "add note: Important info", "add reminder: Pay bills", "show notes"
+                    <br>👨‍👩‍👧‍👦 <strong>Family:</strong> "add family event: Birthday party", "show family", "show family events"
+                    <br>💰 <strong>Expenses:</strong> "add expense 50: Lunch", "show expenses", "show budget"
+                    <br>🎯 <strong>Goals & Habits:</strong> "add goal work: Finish project", "add habit: Morning exercise", "show goals"
+                    <br>👤 <strong>Contacts:</strong> "add contact John: 123-456-7890", "show contacts"
+                    <br>🎬 <strong>Entertainment:</strong> "entertainment", "recommend", "motivation"
+                    <br><br>
+                    <strong>Quick Actions:</strong> Try "good morning" for a daily summary!
+                    <br><br>
+                    What would you like to do today?
+                </div>
+            </div>
+            
+            <div class="suggestions-container">
+                <div class="suggestions-header" onclick="toggleSuggestions()" id="suggestionsHeader">
+                    🚀 Quick Actions (Click to show/hide)
+                </div>
+                <div class="suggestions-content collapsed" id="suggestionsContent">
+                    <div class="category-label">📊 VIEW INFORMATION</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('good morning')">🌅 Good Morning</span>
+                        <span class="suggestion" onclick="sendSuggestion('show tasks')">📋 Show Tasks</span>
+                        <span class="suggestion" onclick="sendSuggestion('show today')">📅 Today's Schedule</span>
+                        <span class="suggestion" onclick="sendSuggestion('show reminders')">🔔 Show Reminders</span>
+                        <span class="suggestion" onclick="sendSuggestion('show goals')">🎯 Show Goals</span>
+                        <span class="suggestion" onclick="sendSuggestion('show expenses')">💰 Show Expenses</span>
+                    </div>
+                    
+                    <div class="category-label">➕ ADD NEW ITEMS</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('add task: ')">📝 Add Task</span>
+                        <span class="suggestion" onclick="sendSuggestion('add work task: ')">💼 Add Work Task</span>
+                        <span class="suggestion" onclick="sendSuggestion('add reminder: ')">⏰ Add Reminder</span>
+                        <span class="suggestion" onclick="sendSuggestion('add note: ')">📄 Add Note</span>
+                        <span class="suggestion" onclick="sendSuggestion('add expense 25: ')">💸 Add Expense</span>
+                        <span class="suggestion" onclick="sendSuggestion('schedule 2025-07-10: ')">📅 Schedule Item</span>
+                    </div>
+                    
+                    <div class="category-label">🎯 GOALS & HABITS</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('add goal work: ')">🏆 Work Goal</span>
+                        <span class="suggestion" onclick="sendSuggestion('add goal personal: ')">🌟 Personal Goal</span>
+                        <span class="suggestion" onclick="sendSuggestion('add goal health: ')">🏃 Health Goal</span>
+                        <span class="suggestion" onclick="sendSuggestion('add habit: ')">🔄 Add Habit</span>
+                        <span class="suggestion" onclick="sendSuggestion('show habits')">📊 Show Habits</span>
+                    </div>
+                    
+                    <div class="category-label">👥 FAMILY & CONTACTS</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('add contact ')">👤 Add Contact</span>
+                        <span class="suggestion" onclick="sendSuggestion('add family event: ')">👨‍👩‍👧‍👦 Family Event</span>
+                        <span class="suggestion" onclick="sendSuggestion('show family')">👪 Show Family</span>
+                        <span class="suggestion" onclick="sendSuggestion('show contacts')">📞 Show Contacts</span>
+                        <span class="suggestion" onclick="sendSuggestion('show notes')">📄 Show Notes</span>
+                    </div>
+                    
+                    <div class="category-label">⚡ QUICK ACTIONS</div>
+                    <div class="suggestions">
+                        <span class="suggestion" onclick="sendSuggestion('complete task: ')">✅ Complete Task</span>
+                        <span class="suggestion" onclick="sendSuggestion('motivation')">✨ Get Motivation</span>
+                        <span class="suggestion" onclick="sendSuggestion('entertainment')">🎬 Entertainment</span>
+                        <span class="suggestion" onclick="sendSuggestion('weather')">🌤️ Weather</span>
+                        <span class="suggestion" onclick="sendSuggestion('good evening')">🌙 Good Evening</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                Assistant is thinking...
+            </div>
+            
+            <div class="input-container">
+                <input type="text" class="input-field" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+                <button class="send-button" onclick="sendMessage()" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const loading = document.getElementById('loading');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.innerHTML = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            messageInput.value = '';
+            sendButton.disabled = true;
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:8000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: message })
+                });
+
+                const data = await response.json();
+                addMessage(data.response);
+            } catch (error) {
+                addMessage('Sorry, I encountered an error. Please make sure the server is running.');
+            } finally {
+                sendButton.disabled = false;
+                loading.style.display = 'none';
+                messageInput.focus();
+            }
+        }
+
+        function sendSuggestion(text) {
+            messageInput.value = text;
+            if (text.endsWith(': ') || text.endsWith(' ')) {
+                messageInput.focus();
+                messageInput.setSelectionRange(text.length, text.length);
+            } else {
+                sendMessage();
+            }
+        }
+
+        function toggleSuggestions() {
+            const content = document.getElementById('suggestionsContent');
+            const header = document.getElementById('suggestionsHeader');
+            
+            content.classList.toggle('collapsed');
+            
+            if (content.classList.contains('collapsed')) {
+                header.textContent = '🚀 Quick Actions (Click to show)';
+            } else {
+                header.textContent = '🚀 Quick Actions (Click to hide)';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Focus on input when page loads
+        window.onload = function() {
+            messageInput.focus();
+        };
+    </script>
+</body>
+</html>
